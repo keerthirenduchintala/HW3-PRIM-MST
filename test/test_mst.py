@@ -30,11 +30,29 @@ def check_mst(adj_mat: np.ndarray,
         return abs(a - b) < allowed_error
 
     total = 0
+    edge_count = 0
     for i in range(mst.shape[0]):
         for j in range(i+1):
             total += mst[i, j]
+            if mst[i,j] > 0:
+                edge_count += 1
     assert approx_equal(total, expected_weight), 'Proposed MST has incorrect expected weight'
 
+    # check that number of edges in mst is n-1
+    n = mst.shape[0]
+    assert edge_count == n-1, f'MST does not have {n-1} edges, has {edge_count} edges!' 
+
+    # check connectivity by using BFS - starts at one node and visits all nodes it can reach, should match nodes in mst
+    visited = set()
+    queue = [0]
+    visited.add(0)
+    while queue:
+        node = queue.pop(0)
+        for neighbor in range(n):
+            if mst[node][neighbor] > 0 and neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    assert len(visited) == n, 'MST is disconnected!!'
 
 def test_mst_small():
     """
@@ -65,10 +83,32 @@ def test_mst_single_cell_data():
     check_mst(g.adj_mat, g.mst, 57.263561605571695)
 
 
-def test_mst_student():
+def test_mst_symmetry():
     """
-    
-    TODO: Write at least one unit test for MST construction.
-    
+    Unit test for symmetry of mst output    
     """
-    pass
+    file_path = './data/small.csv'
+    g = Graph(file_path)
+    g.construct_mst()
+    
+    n = g.mst.shape[0]
+    
+    for i in range(n):
+        for j in range(n):
+            assert g.mst[i][j] == g.mst[j][i], f'MST not symmetric at [{i}][{j}]'
+
+
+def test_mst_valid_edges():
+    """
+    Unit test that MST only contains edges from original graph
+    """
+    file_path = './data/small.csv'
+    g = Graph(file_path)
+    g.construct_mst()
+    
+    n = g.mst.shape[0]
+    
+    for i in range(n):
+        for j in range(n):
+            if g.mst[i][j] > 0:
+                assert g.adj_mat[i][j] == g.mst[i][j], f'Edge [{i}][{j}] not in original graph'
