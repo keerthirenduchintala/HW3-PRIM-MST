@@ -1,0 +1,27 @@
+[build-system]
+requires = [
+	"flit_core >=3.2,<4",
+	]
+build-backend = "flit_core.buildapi"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+
+[project]
+name = "prim-mst"
+authors = [{name = "Keerthi Renduchintala", email = "keerthi.renduchintala@ucsf.edu"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+requires-python = ">=3.7" 
+dependencies = [
+    "pytest",
+    "numpy",
+    "scikit-learn"
+]
+
+[project.urls]
+Home = "https://github.com/keerthirenduchintala/HW3-PRIM-MST.git"
